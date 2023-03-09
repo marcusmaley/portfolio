@@ -103,42 +103,7 @@
                         </div>
                     </div>
 
-                    <div class="container mt-5">
-<pre><code>#include &lt;stdio.h&gt;
-
-int main(){
-    
-    int m1, m2, d1, d2, y1, y2;
-    
-    do{
-    printf("\nEnter date 1 (MM/DD/YY): ");
-    scanf("%d/%d/%d", &m1, &d1, &y1);
-    if(m1==0 || d1==0 || y1==0){
-        break;
-    }
-    
-    printf("\nEnter date  2 (MM/DD/YY): ");
-    scanf("%d/%d/%d", &m2, &d2, &y2);
-
-    if(y1 &lt; y2){
-        printf("The date 1 comes first on the calander\n");
-    }else if(y2 &lt; y1){
-        printf("The date 2 comes first on the calander\n");
-    }else if(m1 &lt; m2){
-        printf("The date 1 comes first on the calander\n");
-    }else if(m2 &lt; m1){
-        printf("The date 2 comes first on the calander\n");
-    }else if(d1 &lt; d2){
-        printf("The date 1 comes first on the calander\n");
-    }else{
-        printf("The date 2 comes first on the calander\n");
-    }
-    }while(m1&gt;0 && d1&gt;0 && y1&gt;0);
-        return 0;
-    
-}
-</code></pre>
-                      </div>
+                    
 
                     </div>
                     <div class="container mt-5">
@@ -212,6 +177,43 @@ int main(){
     }
     </code></pre>
                       </div>
+
+<div class="container mt-5">
+<pre><code>#include &lt;stdio.h&gt;
+
+int main(){
+    
+    int m1, m2, d1, d2, y1, y2;
+    
+    do{
+    printf("\nEnter date 1 (MM/DD/YY): ");
+    scanf("%d/%d/%d", &m1, &d1, &y1);
+    if(m1==0 || d1==0 || y1==0){
+        break;
+    }
+    
+    printf("\nEnter date  2 (MM/DD/YY): ");
+    scanf("%d/%d/%d", &m2, &d2, &y2);
+
+    if(y1 &lt; y2){
+        printf("The date 1 comes first on the calander\n");
+    }else if(y2 &lt; y1){
+        printf("The date 2 comes first on the calander\n");
+    }else if(m1 &lt; m2){
+        printf("The date 1 comes first on the calander\n");
+    }else if(m2 &lt; m1){
+        printf("The date 2 comes first on the calander\n");
+    }else if(d1 &lt; d2){
+        printf("The date 1 comes first on the calander\n");
+    }else{
+        printf("The date 2 comes first on the calander\n");
+    }
+    }while(m1&gt;0 && d1&gt;0 && y1&gt;0);
+        return 0;
+    
+}
+</code></pre>
+                        </div>
 <div class="container mt-5">
 <pre><code>#include &lt;stdio.h&gt;
 
@@ -331,10 +333,10 @@ int main(){
                 
         </section>
     
-        <!-- contact section-->
-        <section id="contact">
+         <!-- contact section-->
+         <section id="contact">
             <div class="container mt-3 contactContent">
-                <h1 class="text-center">Contact Me</h1>
+                <h1 class="text-left">Contact Me</h1>
     
                 <div class="row mt-4">
                     <div class="col-lg-6">
@@ -348,23 +350,16 @@ int main(){
                             <style>#embedmap-canvas img{max-width:none!important;background:none!important;font-size: inherit;font-weight:inherit;}
                             </style>
                         </div>
-                    </div>
-                 <div class="col-lg-6">
-                    <!-- form fields -->
-                    <form>
-                        <input type="text" class="form-control form-control-lg" placeholder="Name">
-                        <input type="email" class="form-control mt-3" placeholder="Email">
                         <div class="mb-3 mt-3">
+                            <a href="mailto:marcusmaley@usf.edu" class="btn btn-success mt-3">Contact Me</a>
                         </div>
-                        <button type="button" class="btn btn-success mt-3">Contact Me</button>  
-                </div>
+                    </div>
             </div>
         </section>
         <!-- footer section-->
         <footer id="footer">
             <div class="container-fluid">
-                <p>Marcus Maley<br>
-                <a href="mailto:marcus_maley@verizon.net">marcus_maley@verizon.net</a></p>
+                <p>Created by: Marcus Maley</p>
             </div>
         </footer>
     

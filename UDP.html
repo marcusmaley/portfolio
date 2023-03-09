@@ -55,16 +55,16 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item active">
-                            <a class="nav-link" href="#home">Home</a>
+                            <a class="nav-link" href="https://marcusmaley.github.io/portfolio/#home">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#about">About</a>
+                            <a class="nav-link" href="https://marcusmaley.github.io/portfolio/#about">About</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#services">Services</a>
+                            <a class="nav-link" href="https://marcusmaley.github.io/portfolio/#services">Services</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#portfolio">Portfolio</a>
+                            <a class="nav-link" href="https://marcusmaley.github.io/portfolio/#portfolio">Portfolio</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="#contact">Contact</a>
@@ -93,15 +93,14 @@
                                           <div class="col-md-4 mx-auto">
                                             <div class="input-group">
                                               <span>
-                                                <a href="scripts/UDPServer.java" download><i class="fas fa-file-code fa-2x text-center"><br>Server</i></a>
-                                            
+                                                <a href="scripts/UDPClient.java" download><i class="fas fa-file-code fa-2x text-center"><br>Client</i></a> 
                                               </span>
                                             </div>
                                           </div>
                                           <div class="col-md-4 mx-auto">
                                             <div class="input-group">
                                               <span>
-                                                <a href="scripts/UDPClient.java" download><i class="fas fa-file-code fa-2x text-center"><br>Client</i></a> 
+                                                <a href="scripts/UDPServer.java" download><i class="fas fa-file-code fa-2x text-center"><br>Server</i></a>
                                               </span>
                                         </div>
                                       </div>
@@ -110,13 +109,60 @@
                         </div>
                     </div>
 
+
+
+                    </div>
                     <div class="container mt-5">
+<pre><code>/*
+    Java client with UDP socket to request server to change message to
+    all upper case characters
+    
+    C:\....&gt; javac UDPClient.java
+    C:\....&gt; java UDPClient
+*/
+import java.io.*;
+import java.net.*;
+
+public class UDPClient {
+    public static void main(String args[]) {
+        DatagramSocket clientSocket = null;
+        int port = 12000; // in case port 12000 is already used by another server
+        String sentence;
+        BufferedReader cin = new BufferedReader(new InputStreamReader(System.in));
+
+        try {
+            clientSocket = new DatagramSocket();
+            InetAddress host = InetAddress.getByName("localhost");
+
+            while (true) {
+                // get input and send the packet
+                System.out.println("\nInput lowercase sentence:\n");
+                sentence = (String) cin.readLine();
+                byte[] b = sentence.getBytes();
+                DatagramPacket dp = new DatagramPacket(b, b.length, host, port);
+                clientSocket.send(dp);
+
+                // now receive reply
+                byte[] buffer = new byte[65536];
+                DatagramPacket reply = new DatagramPacket(buffer, buffer.length);
+                clientSocket.receive(reply);
+                byte[] data = reply.getData();
+                sentence = new String(data, 0, reply.getLength());
+                System.out.println(sentence);
+            }
+        } catch (IOException e) {
+            System.err.println("IOException " + e);
+        }
+    }
+}</code></pre>
+                      </div>
+                      <div class="container mt-5">
                         <pre><code>/*
 Java server with UDP socket to accept client's request to change its message to
 all upper case characters
 
-C:\....> javac UDPServer.java
-C:\....> java UDPServer
+C:\....&gt; javac UDPServer.java
+C:\....&gt; java UDPServer
 */
 
 import java.io.*;
@@ -156,52 +202,6 @@ public static void main(String args[]) {
 }</code></pre>
                       </div>
 
-                    </div>
-                    <div class="container mt-5">
-<pre><code>/*
-    Java client with UDP socket to request server to change message to
-    all upper case characters
-    
-    C:\....> javac UDPClient.java
-    C:\....> java UDPClient
-*/
-import java.io.*;
-import java.net.*;
-
-public class UDPClient {
-    public static void main(String args[]) {
-        DatagramSocket clientSocket = null;
-        int port = 12000; // in case port 12000 is already used by another server
-        String sentence;
-        BufferedReader cin = new BufferedReader(new InputStreamReader(System.in));
-
-        try {
-            clientSocket = new DatagramSocket();
-            InetAddress host = InetAddress.getByName("localhost");
-
-            while (true) {
-                // get input and send the packet
-                System.out.println("\nInput lowercase sentence:\n");
-                sentence = (String) cin.readLine();
-                byte[] b = sentence.getBytes();
-                DatagramPacket dp = new DatagramPacket(b, b.length, host, port);
-                clientSocket.send(dp);
-
-                // now receive reply
-                byte[] buffer = new byte[65536];
-                DatagramPacket reply = new DatagramPacket(buffer, buffer.length);
-                clientSocket.receive(reply);
-                byte[] data = reply.getData();
-                sentence = new String(data, 0, reply.getLength());
-                System.out.println(sentence);
-            }
-        } catch (IOException e) {
-            System.err.println("IOException " + e);
-        }
-    }
-}</code></pre>
-                      </div>
-
                     </div>    
                     
     
@@ -209,10 +209,10 @@ public class UDPClient {
                 
         </section>
     
-        <!-- contact section-->
-        <section id="contact">
+         <!-- contact section-->
+         <section id="contact">
             <div class="container mt-3 contactContent">
-                <h1 class="text-center">Contact Me</h1>
+                <h1 class="text-left">Contact Me</h1>
     
                 <div class="row mt-4">
                     <div class="col-lg-6">
@@ -226,23 +226,16 @@ public class UDPClient {
                             <style>#embedmap-canvas img{max-width:none!important;background:none!important;font-size: inherit;font-weight:inherit;}
                             </style>
                         </div>
-                    </div>
-                 <div class="col-lg-6">
-                    <!-- form fields -->
-                    <form>
-                        <input type="text" class="form-control form-control-lg" placeholder="Name">
-                        <input type="email" class="form-control mt-3" placeholder="Email">
                         <div class="mb-3 mt-3">
+                            <a href="mailto:marcusmaley@usf.edu" class="btn btn-success mt-3">Contact Me</a>
                         </div>
-                        <button type="button" class="btn btn-success mt-3">Contact Me</button>  
-                </div>
+                    </div>
             </div>
         </section>
         <!-- footer section-->
         <footer id="footer">
             <div class="container-fluid">
-                <p>Marcus Maley<br>
-                <a href="mailto:marcus_maley@verizon.net">marcus_maley@verizon.net</a></p>
+                <p>Created by: Marcus Maley</p>
             </div>
         </footer>
     
