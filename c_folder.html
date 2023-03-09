@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Portfolio Website-Marcus</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js" integrity="sha512-i7r9zLu8afJLHdZwJjKscFLF+JGzrb7msHvK97zQgC9bm+anbrvux8Wn48nMHovJb3a4ft6lLPL4Ioyxz6XzUg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://kit.fontawesome.com/31149d48b0.js" crossorigin="anonymous"></script>
+</head>
+    <header>
+        <nav class="navbar navbar-expand-lg fixed-top navbarScroll">
+            <div class="container">
+                <a class="navbar-brand" href="#">Marcus</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item active">
+                            <a class="nav-link" href="#home">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#about">About</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#services">Services</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#portfolio">Portfolio</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#contact">Contact</a>
+                        </li>
+                    </ul>
+                    
+                </div>
+            </div>
+        </nav>
+    </header>
+    <body>
+        <!-- navbar -->
+        <nav class="navbar navbar-expand-lg fixed-top navbar-dark navbarScroll">
+            <div class="container">
+                <a class="navbar-brand" href="#">Marcus</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item active">
+                            <a class="nav-link" href="https://marcusmaley.github.io/portfolio/#home">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="https://marcusmaley.github.io/portfolio/#about">About</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="https://marcusmaley.github.io/portfolio/#services">Services</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="https://marcusmaley.github.io/portfolio/#portfolio">Portfolio</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#contact">Contact</a>
+                        </li>
+                    </ul>
+                    
+                </div>
+            </div>
+        </nav>
+    
+        <!-- UDP Download Files -->
+        <section id="portfolio">
+            <div class="container mt-3">
+                <h1 class="text-center">UDP Server & Client Programs:</h1>
+                <div class="row">
+                    <div class="col-lg-4 mt-4">
+                        <div class="card">
+                            <img class="card-img-top" src="images/portfolioImage1.jpg" alt="Card image" style="width:100%">
+                                
+                            <div class="card-body">
+                                <h4 class="card-title">C Programs</h4>
+                                <p class="card-text">These programs, written in C, are personal and class related codes that helped me practice the language.</p>
+                        
+                                    <div class="container">
+                                        <div class="row">
+                                          <div class="col-md-4 mx-auto">
+                                            <div class="input-group">
+                                              <span>
+                                                <a href="https://github.com/marcusmaley/portfolio/tree/main/scripts/c_programs" download><i class="fa fa-github-square fa-3x text-center" aria-hidden="true"><br>Github Page</i></a>
+                                            
+                                              </span>
+                                            </div>
+                                          </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="container mt-5">
+<pre><code>#include &lt;stdio.h&gt;
+
+int main(){
+    
+    int m1, m2, d1, d2, y1, y2;
+    
+    do{
+    printf("\nEnter date 1 (MM/DD/YY): ");
+    scanf("%d/%d/%d", &m1, &d1, &y1);
+    if(m1==0 || d1==0 || y1==0){
+        break;
+    }
+    
+    printf("\nEnter date  2 (MM/DD/YY): ");
+    scanf("%d/%d/%d", &m2, &d2, &y2);
+
+    if(y1 &lt; y2){
+        printf("The date 1 comes first on the calander\n");
+    }else if(y2 &lt; y1){
+        printf("The date 2 comes first on the calander\n");
+    }else if(m1 &lt; m2){
+        printf("The date 1 comes first on the calander\n");
+    }else if(m2 &lt; m1){
+        printf("The date 2 comes first on the calander\n");
+    }else if(d1 &lt; d2){
+        printf("The date 1 comes first on the calander\n");
+    }else{
+        printf("The date 2 comes first on the calander\n");
+    }
+    }while(m1&gt;0 && d1&gt;0 && y1&gt;0);
+        return 0;
+    
+}
+</code></pre>
+                      </div>
+
+                    </div>
+                    <div class="container mt-5">
+<pre><code>#include &lt;stdio.h&gt;
+
+    struct date{
+        int month, day, year;
+    };
+    
+    //Compares the two dates to determine which comes before the other
+    int compare_dates(struct date d1, struct date d2){
+        int result = 0;
+        //1 = d1 is earlier than d2
+        //-1 = d2 is earlier than d1
+        //0 = d1 and d2 are the same date
+        if(d1.year&lt; d2.year){
+            result = -1;
+        }else if(d2.year&lt;d1.year){
+            result = 1;
+        }else{
+            if(d1.month&lt;d2.month){
+                result = -1;
+            }else if(d2.month&lt;d1.month){
+                result = 1;
+            }else{
+                if(d1.day&lt;d2.day){
+                    result = -1;
+                }else if(d2.day&lt;d1.day){
+                    result = 1;
+                }else{
+                    result = 0;
+                }
+            }
+        }
+        return result;
+    }
+    
+    int main(void){
+        int answer;
+    
+        struct date d1, d2;
+    
+        while(1){
+            printf("\nEnter the first date (mm/dd/yy): ");
+            scanf("%d/%d/%d", &d1.month, &d1.day, &d1.year);
+    
+            //When user enters 0/0/0 the program ends
+            if(d1.month== 0 && d1.day== 0 && d1.year== 0){
+                break;
+            }
+    
+            printf("Enter the second date (mm/dd/yy): ");
+            scanf("%d/%d/%d", &d2.month, &d2.day, &d2.year);
+    
+            if(d2.month== 0 && d2.day== 0 && d2.year== 0){
+                break;
+            }
+            
+            //calls to the comparre_date function		
+            answer = compare_dates(d1,d2);
+    
+            if(answer == -1){
+                printf("%d/%d/%.2d is earlier than %d/%d/%.2d\n", d1.month, d1.day, d1.year, d2.month, d2.day, d2.year);
+            }else if(answer == 1){
+                printf("%d/%d/%.2d is earlier than %d/%d/%.2d\n", d2.month, d2.day, d2.year, d1.month, d1.day, d1.year);
+            }else{ //if(answer == 0){
+                printf("%d/%d/%.2d and %d/%d/%.2d are the same dates\n", d1.month, d1.day, d1.year, d2.month, d2.day, d2.year);
+            }
+            }
+            return 0;	
+    }
+    </code></pre>
+                      </div>
+<div class="container mt-5">
+<pre><code>#include &lt;stdio.h&gt;
+
+    #define MAX 80
+    #define UPPER_ENCRYPT ((ch - 'A') + key) % 26 + 'A' //Calculates the encryption of upper case
+    #define LOWER_ENCRYPT ((ch - 'a') + key) % 26 + 'a' //Calculates the encryption of lower case
+    
+    
+    int main(void)
+    {
+        int n, key, i;
+        char message[MAX], c;
+    
+        printf("Enter message to be encrypted: ");
+        for (n = 0; (c = getchar()) != '\n'; n++) { //Read characters and ignores the new line
+            message[n] = c;
+        }
+    
+        printf("Enter shift amount: "); //Shifts the the amount
+        scanf("%d", &key);
+    
+        printf("Encrypted message: ");
+        for (i = 0; i &lt; n; i++) {
+            char ch = message[i]; //stores the encrypted message
+    
+            if (message[i] &gt;= 'a' && message[i] &lt;= 'z') {
+                ch = LOWER_ENCRYPT; //uses the #define above
+            } else if (message[i] &gt;= 'A' && message[i] &lt;= 'Z') {
+                ch = UPPER_ENCRYPT; //uses the #define above
+            }
+            printf("%c", ch); //prints the encryption
+        }
+        printf("\n");
+    
+        return 0;
+    }
+</code></pre>
+                        </div>
+
+<div class="container mt-5">
+<pre><code>#include &lt;stdio.h&gt;
+#define N 10
+
+
+int inner_product(int a[], int b[], int n);
+int inner_product_reverse(int a[], int b[], int n);
+
+int main(){
+
+	int a[N], b[N], i;
+	printf("Enter the first array of size %d: ", N);//takes in size of first array
+	for(i=0; i&lt;N; i++){
+		scanf("%d", a+i);
+	}
+
+	printf("Enter the second array of size %d: ", N);//takes in size of second array
+	for(i=0; i&lt;N; i++){
+		scanf("%d", b+i);
+	}
+		printf("Inner product is: %d\n", inner_product(a,b,N));//prints inner product
+		printf("Inner product reverse is: %d\n", inner_product_reverse(a,b,N));//prints inner product in reverse 
+		return 0;
+}
+
+//declaration of inner product function 
+int inner_product(int a[], int b[], int n){
+	int sum = 0, i;
+	for(i=0; i&lt;n; i++){
+		sum+= a[i] * b[i];
+	}
+	return sum;
+}
+
+//declaration of inner product function
+int inner_product_reverse(int a[], int b[], int n){
+	int sum = 0, i;
+	for(i=0; i&lt;n; i++){
+		sum+=  a[i] * b[n-i-1];
+	}
+	return sum;
+}
+</code></pre>
+</div>
+
+<div class="container mt-5">
+<pre><code>#include &lt;stdio.h&gt;
+#define N 10
+
+
+void max_min(int *a, int n, int *max, int *min){
+    int *p;
+    *max = *min = *a;
+    for(p =  a; p &lt; a+n; p++){
+        if(*p&gt;*max)
+            *max = *p;
+        if(*p&lt;*min)
+            *min = *p;
+    }
+}
+
+int main(){
+    int b[N], i, largest, smallest;
+    printf("Enter %d numbers: ", N);
+    for(i=0; i&lt;N; i++){
+        scanf("%d", b+i);
+    }
+
+    max_min(b, N, &largest, &smallest);
+    printf("Largest = %d\n", largest);
+    printf("Smallest = %d\n", smallest);
+    return 0;
+}
+</code></pre>
+</div>
+
+                </div>    
+                
+        </section>
+    
+        <!-- contact section-->
+        <section id="contact">
+            <div class="container mt-3 contactContent">
+                <h1 class="text-center">Contact Me</h1>
+    
+                <div class="row mt-4">
+                    <div class="col-lg-6">
+                        <div style="max-width:100%;overflow:hidden;color:red;width:500px;height:500px;">
+                            <div id="embedmap-canvas" style="height:100%; width:100%;max-width:100%;">
+                                <iframe style="height:100%;width:100%;border:0;" frameborder="0" src="https://www.google.com/maps/embed/v1/place?q=tampa&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8">
+                                </iframe>
+                            
+                            </div>
+                            <a class="googlemaps-html" href="https://www.embed-map.com" id="get-data-forembedmap">https://www.embed-map.com</a>
+                            <style>#embedmap-canvas img{max-width:none!important;background:none!important;font-size: inherit;font-weight:inherit;}
+                            </style>
+                        </div>
+                    </div>
+                 <div class="col-lg-6">
+                    <!-- form fields -->
+                    <form>
+                        <input type="text" class="form-control form-control-lg" placeholder="Name">
+                        <input type="email" class="form-control mt-3" placeholder="Email">
+                        <div class="mb-3 mt-3">
+                        </div>
+                        <button type="button" class="btn btn-success mt-3">Contact Me</button>  
+                </div>
+            </div>
+        </section>
+        <!-- footer section-->
+        <footer id="footer">
+            <div class="container-fluid">
+                <p>Marcus Maley<br>
+                <a href="mailto:marcus_maley@verizon.net">marcus_maley@verizon.net</a></p>
+            </div>
+        </footer>
+    
+        <!-- load javascript after loading all html content -->
+        <script src="script.js"></script>
+    
+    </body>
