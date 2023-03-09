@@ -1,0 +1,592 @@
+alter session set container = orclpdb;
+alter database open;
+-------------------------------------------------------------------------------
+--CLEAN SLATE 
+-------------------------------------------------------------------------------
+drop table covid_raw_1; --DELETES DATA FROM RAW DATA TABLE
+drop table states; --DELETES DATA FROM STATES TABLE
+drop table counties; --DELETES DATA FROM COUNTIES TABLE
+drop table cases; --DELETE TABLE CASES
+drop table deaths; --DELETE TABLE DEATHS
+
+drop table DIM_DATES; --DELETE TABLE DIM_DATES
+drop table DIM_STATES; --DELETE TABLE DIM_STATES
+drop table DIM_COUNTIES; --DELETES TABLE DIM_COUNTEIS
+drop table DIM_DEATHS; --DELETES TABLE DIM_DEATHS
+drop table DIM_CASES; --DELETES TABLE DIM_CASES
+drop table FACT_DEATHS_MONTHLY; --DELETES TABLE FACT_DEATHS_MONTHLY
+drop table fact_cases_monthly;--DELETES TABLE FACT_CASES_MONTHLY
+
+drop sequence covid_seq_1; --DELETES SEQUENCE FOR INCREMENTATION 
+drop sequence covid_seq_2; --DELETS SEQUENCE FOR INCREMENTATION 
+drop sequence FACT_DEATHS_MONTHLY_SEQ; --DELETES SEQUENCE FOR INCREMENTATION 
+drop sequence fact_cases_monthly_SEQ;--DELETES SEQUENCE FOR INCREMENTATION 
+-------------------------------------------------------------------------------
+--COVID RAW DATA 
+-------------------------------------------------------------------------------
+create table covid_raw_1  --IMPORT RAW DATA
+(
+    L_DATE  DATE,
+    COUNTY  VARCHAR2(50),
+    STATE    VARCHAR2(35),
+    FIPS     NUMBER(10,0),
+    CASES    NUMBER(10,0),
+    DEATHS   NUMBER(10,0)
+);
+-------------------------------------------------------------------------------
+--STATES TABLE
+-------------------------------------------------------------------------------
+create table STATES --CREATE STATES DATA
+(
+  state_cd          char(2)        NOT NULL,
+  state_nm          varchar(30)    NOT NULL,
+  PRIMARY KEY(state_cd)
+);
+
+--MANUALLY ENTERING IN ALL 50 STATES + DC
+insert into states (state_cd,state_nm) values ('AL','Alabama');
+insert into states (state_cd,state_nm) values ('AK','Alaska');
+insert into states (state_cd,state_nm) values ('AZ','Arizona');
+insert into states (state_cd,state_nm) values ('AR','Arkansas');
+insert into states (state_cd,state_nm) values ('CA','California');
+insert into states (state_cd,state_nm) values ('CO','Colorado');
+insert into states (state_cd,state_nm) values ('CT','Connecticut');
+insert into states (state_cd,state_nm) values ('DE','Delaware');
+insert into states (state_cd,state_nm) values ('DC','District of Columbia');
+insert into states (state_cd,state_nm) values ('FL','Florida');
+insert into states (state_cd,state_nm) values ('GA','Georgia');
+insert into states (state_cd,state_nm) values ('HI','Hawaii');
+insert into states (state_cd,state_nm) values ('ID','Idaho');
+insert into states (state_cd,state_nm) values ('IL','Illinois');
+insert into states (state_cd,state_nm) values ('IN','Indiana');
+insert into states (state_cd,state_nm) values ('IA','Iowa');
+insert into states (state_cd,state_nm) values ('KS','Kansas');
+insert into states (state_cd,state_nm) values ('KY','Kentucky');
+insert into states (state_cd,state_nm) values ('LA','Louisiana');
+insert into states (state_cd,state_nm) values ('ME','Maine');
+insert into states (state_cd,state_nm) values ('MD','Maryland');
+insert into states (state_cd,state_nm) values ('MA','Massachusetts');
+insert into states (state_cd,state_nm) values ('MI','Michigan');
+insert into states (state_cd,state_nm) values ('MN','Minnesota');
+insert into states (state_cd,state_nm) values ('MS','Mississippi');
+insert into states (state_cd,state_nm) values ('MO','Missouri');
+insert into states (state_cd,state_nm) values ('MT','Montana');
+insert into states (state_cd,state_nm) values ('NE','Nebraska');
+insert into states (state_cd,state_nm) values ('NV','Nevada');
+insert into states (state_cd,state_nm) values ('NH','New Hampshire');
+insert into states (state_cd,state_nm) values ('NJ','New Jersey');
+insert into states (state_cd,state_nm) values ('NM','New Mexico');
+insert into states (state_cd,state_nm) values ('NY','New York');
+insert into states (state_cd,state_nm) values ('NC','North Carolina');
+insert into states (state_cd,state_nm) values ('ND','North Dakota');
+insert into states (state_cd,state_nm) values ('OH','Ohio');
+insert into states (state_cd,state_nm) values ('OK','Oklahoma');
+insert into states (state_cd,state_nm) values ('OR','Oregon');
+insert into states (state_cd,state_nm) values ('PA','Pennsylvania');
+insert into states (state_cd,state_nm) values ('RI','Rhode Island');
+insert into states (state_cd,state_nm) values ('SC','South Carolina');
+insert into states (state_cd,state_nm) values ('SD','South Dakota');
+insert into states (state_cd,state_nm) values ('TN','Tennessee');
+insert into states (state_cd,state_nm) values ('TX','Texas');
+insert into states (state_cd,state_nm) values ('UT','Utah');
+insert into states (state_cd,state_nm) values ('VT','Vermont');
+insert into states (state_cd,state_nm) values ('VA','Virginia');
+insert into states (state_cd,state_nm) values ('WA','Washington');
+insert into states (state_cd,state_nm) values ('WV','West Virginia');
+insert into states (state_cd,state_nm) values ('WI','Wisconsin');
+insert into states (state_cd,state_nm) values ('WY','Wyoming');
+-------------------------------------------------------------------------------
+--COUNTIES TABLE
+-------------------------------------------------------------------------------
+create table counties --CREATE TABLE COUNTIES FROM COVID_RAW_1
+(
+    FIPS        NUMBER(10,0)    NOT NULL,
+    COUNTY      VARCHAR2(50)    NOT NULL,
+    STATE       VARCHAR2(35)    NOT NULL,
+    PRIMARY KEY(FIPS)
+);
+
+--INSERT DATA INTO COUNTIES FROM COVID_RAW_1 AND STATES TABLE
+insert into counties
+    select 
+        unique a.fips,
+        a.county,
+        b.state_nm
+from covid_raw_1 a, states b
+where fips is not null and a.state = b.state_nm;    
+--------------------------------------------------------------------------------
+--CASES TABLE
+--------------------------------------------------------------------------------
+CREATE SEQUENCE covid_seq_1 --CREATE SEQUENCE TO INCREMENT DATA FROM 
+INCREMENT BY 1
+START WITH   1
+MAXVALUE     9999999999
+MINVALUE     1
+CYCLE;
+
+create table cases --CREATES CASES TABLE FROM COVID_RAW_1
+(
+    CASE_ID     NUMBER(38,0)        NOT NULL,
+    CASES       NUMBER(10,0)        NOT NULL,
+    FIPS        NUMBER(10,0)        NOT NULL,
+    L_DATE        DATE              NOT NULL,
+    PRIMARY KEY(CASE_ID),
+    FOREIGN KEY(FIPS) REFERENCES counties(FIPS)
+);
+
+--INSERT VALUES FROM COUNTIES AND COVID_RAW_1 INTO CASES
+insert into cases 
+    select
+        covid_seq_1.nextval,
+        c.cases,
+        cn.fips,
+        c.l_date
+from counties cn, covid_raw_1 c
+where cn.FIPS is not null and cn.FIPS = c.FIPS;
+--------------------------------------------------------------------------------
+--DEATHS TABLE
+--------------------------------------------------------------------------------
+create table deaths --CREATES DEATHS TABLE FROM COVID_RAW_1
+(
+    DEATH_ID    NUMBER(38,0)        NOT NULL,
+    DEATHS      NUMBER(10,0)        NOT NULL,
+    FIPS        NUMBER(10,0)        NOT NULL,
+    L_DATE      DATE                NOT NULL,
+    PRIMARY KEY(DEATH_ID),
+    FOREIGN KEY(FIPS) REFERENCES COUNTIES(FIPS)
+);
+
+--INSERT VALUES FROM COUNTIES AND COVID_RAW_1 INTO DEATHS
+insert into deaths
+    select
+        covid_seq_1.nextval,
+        c.deaths,
+        cn.fips,
+        c.l_date
+from counties cn, covid_raw_1 c
+where cn.FIPS is not null and cn.FIPS = c.FIPS;
+--------------------------------------------------------------------------------
+--DIMENSION TABLES
+--------------------------------------------------------------------------------
+CREATE SEQUENCE covid_seq_2 --CREATES SEQUENCE TO MAKE UNIQUE ID NUMBERS FOR ALL DIM TABLES
+INCREMENT BY 1
+START WITH   1
+MAXVALUE     9999999999
+MINVALUE     1
+CYCLE;
+
+create table DIM_DATES --CREATES DIM_DATES
+(
+    DATE_ID     NUMBER(38,0)    NOT NULL,
+    DATE_ABV     VARCHAR2(5)     NOT NULL,
+    MONTH_LONG  VARCHAR2(50)    NOT NULL,
+    DIM_YEAR    CHAR(4)         NOT NULL,
+    PRIMARY KEY(DATE_ID)
+);
+
+ --MANUALLY ENTERING IN DATES WITH YEARS AND 1 NULL VALUE
+INSERT INTO DIM_DATES VALUES(covid_seq_2.nextval, 'NULL', 'NULL', 'NULL');
+INSERT INTO DIM_DATES VALUES(covid_seq_2.nextval, 'JAN', 'JANUARY', '2020');
+INSERT INTO DIM_DATES VALUES(covid_seq_2.nextval, 'FEB', 'FEBRUARY', '2020');
+INSERT INTO DIM_DATES VALUES(covid_seq_2.nextval, 'MAR', 'MARCH', '2020');
+INSERT INTO DIM_DATES VALUES(covid_seq_2.nextval, 'APR', 'APRIL', '2020');
+INSERT INTO DIM_DATES VALUES(covid_seq_2.nextval, 'MAY', 'MAY', '2020');
+INSERT INTO DIM_DATES VALUES(covid_seq_2.nextval, 'JUN', 'JUNE', '2020');
+INSERT INTO DIM_DATES VALUES(covid_seq_2.nextval, 'JUL', 'JULY', '2020');
+INSERT INTO DIM_DATES VALUES(covid_seq_2.nextval, 'AUG', 'AUGUST', '2020');
+INSERT INTO DIM_DATES VALUES(covid_seq_2.nextval, 'SEP', 'SEPTEMBER', '2020');
+INSERT INTO DIM_DATES VALUES(covid_seq_2.nextval, 'OCT', 'OCTOBER', '2020');
+INSERT INTO DIM_DATES VALUES(covid_seq_2.nextval, 'NOV', 'NOVEMBER', '2020');
+INSERT INTO DIM_DATES VALUES(covid_seq_2.nextval, 'DEC', 'DECEMBER', '2020');
+INSERT INTO DIM_DATES VALUES(covid_seq_2.nextval, 'JAN', 'JANUARY', '2021');
+INSERT INTO DIM_DATES VALUES(covid_seq_2.nextval, 'FEB', 'FEBRUARY', '2021');
+INSERT INTO DIM_DATES VALUES(covid_seq_2.nextval, 'MAR', 'MARCH', '2021');
+insert into DIM_DATES VALUES(covid_seq_2.nextval, 'APR', 'APRIL', '2021');
+INSERT INTO DIM_DATES VALUES(covid_seq_2.nextval, 'MAY', 'MAY', '2021');
+INSERT INTO DIM_DATES VALUES(covid_seq_2.nextval, 'JUN', 'JUNE', '2021');
+INSERT INTO DIM_DATES VALUES(covid_seq_2.nextval, 'JUL', 'JULY', '2021');
+INSERT INTO DIM_DATES VALUES(covid_seq_2.nextval, 'AUG', 'AUGUST', '2021');
+INSERT INTO DIM_DATES VALUES(covid_seq_2.nextval, 'SEP', 'SEPTEMBER', '2021');
+INSERT INTO DIM_DATES VALUES(covid_seq_2.nextval, 'OCT', 'OCTOBER', '2021');
+INSERT INTO DIM_DATES VALUES(covid_seq_2.nextval, 'NOV', 'NOVEMBER', '2021');
+INSERT INTO DIM_DATES VALUES(covid_seq_2.nextval, 'DEC', 'DECEMBER', '2021');
+
+
+create table DIM_STATES --CREATES TABLE DIM_STAES
+(
+    STATES_ID     NUMBER(38,0)    NOT NULL,
+    STATES_ABV     VARCHAR2(5)     NOT NULL,
+    STATES_LONG  VARCHAR2(50)    NOT NULL,
+    PRIMARY KEY(STATES_ID)
+);
+
+ --MANUALLY ENTERING IN ABBREVIATED STATE, STATE NAME AND 1 NULL VALUE
+insert into DIM_STATES  values (covid_seq_2.nextval,'NL','NULL');
+insert into DIM_STATES  values (covid_seq_2.nextval,'AL','Alabama');
+insert into DIM_STATES  values (covid_seq_2.nextval,'AK','Alaska');
+insert into DIM_STATES  values (covid_seq_2.nextval,'AZ','Arizona');
+insert into DIM_STATES  values (covid_seq_2.nextval,'AR','Arkansas');
+insert into DIM_STATES  values (covid_seq_2.nextval,'CA','California');
+insert into DIM_STATES  values (covid_seq_2.nextval,'CO','Colorado');
+insert into DIM_STATES  values (covid_seq_2.nextval,'CT','Connecticut');
+insert into DIM_STATES  values (covid_seq_2.nextval,'DE','Delaware');
+insert into DIM_STATES  values (covid_seq_2.nextval,'DC','District of Columbia');
+insert into DIM_STATES  values (covid_seq_2.nextval,'FL','Florida');
+insert into DIM_STATES  values (covid_seq_2.nextval,'GA','Georgia');
+insert into DIM_STATES  values (covid_seq_2.nextval,'HI','Hawaii');
+insert into DIM_STATES  values (covid_seq_2.nextval,'ID','Idaho');
+insert into DIM_STATES  values (covid_seq_2.nextval,'IL','Illinois');
+insert into DIM_STATES  values (covid_seq_2.nextval,'IN','Indiana');
+insert into DIM_STATES  values (covid_seq_2.nextval,'IA','Iowa');
+insert into DIM_STATES  values (covid_seq_2.nextval,'KS','Kansas');
+insert into DIM_STATES  values (covid_seq_2.nextval,'KY','Kentucky');
+insert into DIM_STATES  values (covid_seq_2.nextval,'LA','Louisiana');
+insert into DIM_STATES  values (covid_seq_2.nextval,'ME','Maine');
+insert into DIM_STATES  values (covid_seq_2.nextval,'MD','Maryland');
+insert into DIM_STATES  values (covid_seq_2.nextval,'MA','Massachusetts');
+insert into DIM_STATES  values (covid_seq_2.nextval,'MI','Michigan');
+insert into DIM_STATES  values (covid_seq_2.nextval,'MN','Minnesota');
+insert into DIM_STATES  values (covid_seq_2.nextval,'MS','Mississippi');
+insert into DIM_STATES  values (covid_seq_2.nextval,'MO','Missouri');
+insert into DIM_STATES  values (covid_seq_2.nextval,'MT','Montana');
+insert into DIM_STATES  values (covid_seq_2.nextval,'NE','Nebraska');
+insert into DIM_STATES  values (covid_seq_2.nextval,'NV','Nevada');
+insert into DIM_STATES  values (covid_seq_2.nextval,'NH','New Hampshire');
+insert into DIM_STATES  values (covid_seq_2.nextval,'NJ','New Jersey');
+insert into DIM_STATES  values (covid_seq_2.nextval,'NM','New Mexico');
+insert into DIM_STATES  values (covid_seq_2.nextval,'NY','New York');
+insert into DIM_STATES  values (covid_seq_2.nextval,'NC','North Carolina');
+insert into DIM_STATES  values (covid_seq_2.nextval,'ND','North Dakota');
+insert into DIM_STATES  values (covid_seq_2.nextval,'OH','Ohio');
+insert into DIM_STATES  values (covid_seq_2.nextval,'OK','Oklahoma');
+insert into DIM_STATES  values (covid_seq_2.nextval,'OR','Oregon');
+insert into DIM_STATES  values (covid_seq_2.nextval,'PA','Pennsylvania');
+insert into DIM_STATES  values (covid_seq_2.nextval,'RI','Rhode Island');
+insert into DIM_STATES  values (covid_seq_2.nextval,'SC','South Carolina');
+insert into DIM_STATES  values (covid_seq_2.nextval,'SD','South Dakota');
+insert into DIM_STATES  values (covid_seq_2.nextval,'TN','Tennessee');
+insert into DIM_STATES  values (covid_seq_2.nextval,'TX','Texas');
+insert into DIM_STATES  values (covid_seq_2.nextval,'UT','Utah');
+insert into DIM_STATES  values (covid_seq_2.nextval,'VT','Vermont');
+insert into DIM_STATES  values (covid_seq_2.nextval,'VA','Virginia');
+insert into DIM_STATES  values (covid_seq_2.nextval,'WA','Washington');
+insert into DIM_STATES  values (covid_seq_2.nextval,'WV','West Virginia');
+insert into DIM_STATES  values (covid_seq_2.nextval,'WI','Wisconsin');
+insert into DIM_STATES  values (covid_seq_2.nextval,'WY','Wyoming');
+
+
+create table DIM_COUNTIES --CREATES TABLE DIM_COUNTIES
+(
+    COUNTY_ID     NUMBER(38,0)    NOT NULL,
+    COUNTY_NM     VARCHAR2(50)    NOT NULL,
+    FIPS          NUMBER(38,0)    NOT NULL,
+    STATE         VARCHAR2(35)    NOT NULL,
+    PRIMARY KEY(COUNTY_ID)
+);
+
+--INITIAL NULL VALUE
+insert into DIM_COUNTIES values (covid_seq_2.nextval,'NULL',0, 'NULL');
+--INSERTS DATA FROM COUNTIES TABLE
+insert into DIM_COUNTIES 
+    select
+        covid_seq_2.nextval,
+        COUNTY,
+        FIPS,
+        STATE
+    FROM counties
+WHERE FIPS IS NOT NULL;    
+        
+create table DIM_DEATHS --INSERT VALUES INTO DIM_RECORDS
+(
+    RECORD_ID     NUMBER(38,0)    NOT NULL,
+    DEATH_ID      NUMBER(38,0)    NOT NULL,
+    DEATHS        NUMBER(38,0)    NOT NULL,
+    FIPS          NUMBER(10,0)    NOT NULL,
+    PRIMARY KEY(RECORD_ID)
+);
+
+--INITIAL NULL VALUE
+insert into DIM_DEATHS VALUES (covid_seq_2.nextval,0,0,0);
+insert into DIM_DEATHS --PULLING DATA FROM RAW DATA INTO DIM_RECORDS
+    select
+        covid_seq_2.nextval,
+        DEATH_ID,
+        DEATHS,
+        FIPS
+    FROM  deaths 
+where FIPS is NOT NULL and deaths is not null; 
+
+create table DIM_CASES --INSERT VALUES INTO DIM_RECORDS
+(
+    C_RECORD_ID   NUMBER(38,0)    NOT NULL,
+    CASE_ID      NUMBER(38,0)    NOT NULL,
+    CASES        NUMBER(38,0)    NOT NULL,
+    FIPS          NUMBER(10,0)    NOT NULL,
+    PRIMARY KEY(C_RECORD_ID)
+);
+
+
+insert into DIM_CASES --PULLING DATA FROM RAW DATA INTO DIM_RECORDS
+    select
+        covid_seq_2.nextval,
+        CASE_ID,
+        CASES,
+        FIPS
+    FROM  CASES 
+where FIPS is NOT NULL; 
+--INITIAL NULL VALUE
+insert into DIM_CASES VALUES (covid_seq_2.nextval,0,0,0);
+--------------------------------------------------------------------------------
+--FACT TABLE FOR DEATHS MONTHLY
+--------------------------------------------------------------------------------
+--SEQUENCE FOR CREATING L_NBR IN FACT_DEATHS_MONTHLY
+CREATE SEQUENCE FACT_DEATHS_MONTHLY_SEQ
+    INCREMENT BY 1
+    START WITH 1;
+ 
+--FACT TABLE POPULATING DEATHS MONTHLY   
+CREATE TABLE FACT_DEATHS_MONTHLY
+(
+    L_NBR       NUMBER(38,0)    NOT NULL,
+    DATE_NBR    NUMBER(38,0)    NOT NULL,
+    DTH_NBR     NUMBER(38,0)    NOT NULL,
+    primary key(L_NBR)
+);
+--------------------------------------------------------------------------------
+--POPULATE FACT TABLE FROM DIMENSION FOR DEATHS PER MONTH
+--------------------------------------------------------------------------------
+SET SERVEROUTPUT ON;
+DECLARE
+    cnt     number(5,0) :=0;
+    cur1    SYS_REFCURSOR;
+    cur2    SYS_REFCURSOR;
+    stmt1   VARCHAR2(1000) := 'SELECT DATE_ID, MONTH_LONG, DIM_YEAR FROM DIM_DATES';
+    /*stm2 pulls data deaths, dim_dates, and dim_deaths and gathers
+      the specific month and year associated with it*/
+    stmt2   VARCHAR2(1000) := 'SELECT sum(a.DEATHS), dd.death_id
+                                from DEATHS a, DIM_DATES d, DIM_DEATHS dd       
+                               where 1=1
+                                and SUBSTR(d.MONTH_LONG,1,3) = SUBSTR(TO_CHAR(a.L_DATE, ''MONTH''),1,3)
+                                and SUBSTR(d.DIM_YEAR,1,4)   = SUBSTR(EXTRACT(YEAR FROM a.L_DATE),1,4)
+                                and SUBSTR(TO_CHAR(a.L_DATE, ''MONTH''),1,3) =: 1
+                                and SUBSTR(EXTRACT(YEAR FROM a.L_DATE),1,4) =: 2
+                                and dd.death_id = a.death_id
+                                GROUP BY dd.death_id'; 
+    --stmt4 inserts the values found into the fact table                            
+    stmt4           VARCHAR2(1000) := 'insert into FACT_DEATHS_MONTHLY values(:1, :2, :3)';                              
+    l_dim_date_key  NUMBER(38,0) := -1;
+    l_dim_dth_key   NUMBER(38,0) := -1;
+    l_month_long    VARCHAR2(30);
+    l_dim_year      VARCHAR2(4);
+    l_total_sum     NUMBER(38,0) := -1;
+BEGIN
+    DBMS_OUTPUT.ENABLE (buffer_size => NULL); --avoid overflow
+    Dbms_output.put_line('Start Create FACT Table: Open Curser #1');
+    
+    open cur1 FOR stmt1;
+    LOOP
+        begin
+            FETCH cur1 INTO l_dim_date_key, l_month_long, l_dim_year;
+                EXIT WHEN cur1%NOTFOUND;
+            cnt := cnt +1;
+            
+            begin
+                Dbms_output.put_line('Open Cursor #2');
+                OPEN cur2 for stmt2 USING SUBSTR(l_month_long,1,3), l_dim_year;
+                LOOP
+                    begin
+                        FETCH cur2 INTO l_total_sum, l_dim_dth_key;
+                            EXIT WHEN cur2%NOTFOUND;
+                            
+                        Dbms_output.put_line(' - Counter ='||cnt||': l_dim_date_key='||l_dim_date_key
+                                    ||': Deaths ID='||l_dim_dth_key
+                                    ||': Month='    ||l_month_long
+                                    ||': Year='     ||l_dim_year
+                                    ||': SUM='      ||l_total_sum);
+            
+            --INSERT DATA INTO FACT TABLE
+            if l_total_sum > 0 then
+                begin
+                    execute immediate stmt4
+                        USING FACT_DEATHS_MONTHLY_SEQ.nextval,
+                              l_dim_date_key,
+                              l_dim_dth_key;
+                    exception 
+                        when others then
+                        Dbms_output.put_line('General STMT4 Error '||SQLCODE||' = ErrMsg: '||SUBSTR(SQLERRM, 1, 64));
+                    end;
+                end if;
+            exception 
+                        WHEN OTHERS THEN
+                        DBMS_OUTPUT.PUT_LINE ('  STMT2 Cursor 2 fetch Error: '||SQLCODE||' - ErrMsg: '||SUBSTR(SQLERRM, 1, 64));
+                end;
+            END LOOP;
+            CLOSE cur2;
+        
+        Exception when others then
+                DBMS_OUTPUT.PUT_LINE ('2st Cursor Open Error: '||SQLCODE||' - ErrMsg: '||SUBSTR(SQLERRM, 1, 64));
+            end;
+            
+        Exception when others then
+            DBMS_OUTPUT.PUT_LINE ('2st Cursor Open Error: '||SQLCODE||' - ErrMsg: '||SUBSTR(SQLERRM, 1, 64));
+        end;        
+    
+    END LOOP;
+    COMMIT;
+    CLOSE CUR1;   
+    Dbms_output.put_line('End Create FACT Example'); 
+
+Exception when others then
+    rollback;
+    DBMS_OUTPUT.PUT_LINE ('Main Example Error: '||SQLCODE||' - ErrMsg: '||SUBSTR(SQLERRM, 1, 64));
+
+END;
+/    
+show errors; 
+--------------------------------------------------------------------------------
+--FACT TABLE FOR CASES MONTHLY
+--------------------------------------------------------------------------------        
+CREATE SEQUENCE fact_cases_monthly_SEQ
+    INCREMENT BY 1
+    START WITH 1;
+    
+CREATE TABLE fact_cases_monthly
+(
+    L_NBR       NUMBER(38,0)    NOT NULL,
+    DATE_NBR    NUMBER(38,0)    NOT NULL,
+    CASE_NBR     NUMBER(38,0)    NOT NULL,
+    primary key(L_NBR)
+);
+--------------------------------------------------------------------------------
+--POPULATE FACT TABLE FROM DIMENSION FOR CASES PER MONTH
+--------------------------------------------------------------------------------
+SET SERVEROUTPUT ON;
+DECLARE
+    cnt     number(5,0) :=0;
+    cur1    SYS_REFCURSOR;
+    cur2    SYS_REFCURSOR;
+    stmt1   VARCHAR2(1000) := 'SELECT DATE_ID, MONTH_LONG, DIM_YEAR FROM DIM_DATES';
+    /*stm2 pulls data deaths, dim_dates, and dim_cases and gathers
+      the specific month and year associated with it*/
+    stmt2   VARCHAR2(1000) := 'SELECT sum(a.CASES), c.case_id 
+                                from CASES a, DIM_DATES d, DIM_CASES c       
+                               where 1=1
+                                and SUBSTR(d.MONTH_LONG,1,3) = SUBSTR(TO_CHAR(a.L_DATE, ''MONTH''),1,3)
+                                and SUBSTR(d.DIM_YEAR,1,4)   = SUBSTR(EXTRACT(YEAR FROM a.L_DATE),1,4)
+                                and SUBSTR(TO_CHAR(a.L_DATE, ''MONTH''),1,3) =: 1
+                                and SUBSTR(EXTRACT(YEAR FROM a.L_DATE),1,4) =: 2
+                                and c.case_id = a.case_id
+                                GROUP BY c.case_id'; 
+    --stmt4 inserts the values found into the fact table                            
+    stmt4           VARCHAR2(1000) := 'insert into FACT_CASES_MONTHLY values(:1, :2, :3)';                              
+    l_dim_date_key  NUMBER(38,0) := -1;
+    l_dim_case_key  NUMBER(38,0) := -1;
+    l_month_long    VARCHAR2(30);
+    l_dim_year      VARCHAR2(4);
+    l_total_sum     NUMBER(38,0) := -1;
+BEGIN
+    DBMS_OUTPUT.ENABLE (buffer_size => NULL); --avoid overflow
+    Dbms_output.put_line('Start Create FACT Table: Open Curser #1');
+    
+    open cur1 FOR stmt1;
+    LOOP
+        begin
+            FETCH cur1 INTO l_dim_date_key, l_month_long, l_dim_year;
+                EXIT WHEN cur1%NOTFOUND;
+            cnt := cnt +1;
+            
+            begin
+                Dbms_output.put_line('Open Cursor #2');
+                OPEN cur2 for stmt2 USING SUBSTR(l_month_long,1,3), l_dim_year;
+                LOOP
+                    begin
+                        FETCH cur2 INTO l_total_sum, l_dim_case_key;
+                            EXIT WHEN cur2%NOTFOUND;
+                            
+                        Dbms_output.put_line(' - Counter ='||cnt||': l_dim_date_key='||l_dim_date_key
+                                    ||': Case ID='||l_dim_case_key
+                                    ||': Month='    ||l_month_long
+                                    ||': Year='     ||l_dim_year
+                                    ||': SUM='      ||l_total_sum);
+            
+            --INSERT DATA INTO FACT TABLE
+            if l_total_sum > 0 then
+                begin
+                    execute immediate stmt4
+                        USING fact_cases_monthly_SEQ.nextval,
+                              l_dim_date_key,
+                              l_dim_case_key;
+                    exception 
+                        when others then
+                        Dbms_output.put_line('General STMT4 Error '||SQLCODE||' = ErrMsg: '||SUBSTR(SQLERRM, 1, 64));
+                    end;
+                end if;
+            exception 
+                        WHEN OTHERS THEN
+                        DBMS_OUTPUT.PUT_LINE ('  STMT2 Cursor 2 fetch Error: '||SQLCODE||' - ErrMsg: '||SUBSTR(SQLERRM, 1, 64));
+                end;
+            END LOOP;
+            CLOSE cur2;
+        
+        Exception when others then
+                DBMS_OUTPUT.PUT_LINE ('2st Cursor Open Error: '||SQLCODE||' - ErrMsg: '||SUBSTR(SQLERRM, 1, 64));
+            end;
+            
+        Exception when others then
+            DBMS_OUTPUT.PUT_LINE ('2st Cursor Open Error: '||SQLCODE||' - ErrMsg: '||SUBSTR(SQLERRM, 1, 64));
+        end;        
+    
+    END LOOP;
+    COMMIT;
+    CLOSE CUR1;   
+    Dbms_output.put_line('End Create FACT Example'); 
+
+Exception when others then
+    rollback;
+    DBMS_OUTPUT.PUT_LINE ('Main Example Error: '||SQLCODE||' - ErrMsg: '||SUBSTR(SQLERRM, 1, 64));
+
+END;
+/    
+show errors; 
+
+--------------------------------------------------------------------------------
+--SHOW VALUES OF ALL TABLES
+--------------------------------------------------------------------------------
+select * from covid_raw_1; --SHOWS RAW DATA VALUES
+select * from states; --SHOW VALUES OF STATES
+select * from counties; --PRINT OUT VALUES IN COUNTIES
+select * from cases; --PRINT VALUES IN CASES
+select * from deaths; --PRINT OUT VALUES IN DEATHS
+SELECT * FROM DIM_DATES; --PRINT OUT VALUES FROM DIM_DATES
+SELECT * FROM DIM_STATES; --PRINT OUT VALUES FORM DIM_STATES
+select * from DIM_COUNTIES; --PRINT TABLE DIM_COUNTIES
+select * from DIM_DEATHS; --PRINTS OUT DIM_RECORDS VALUES
+select * from DIM_CASES; --PRINTS OUT DIM_RECORDS VALUES
+select * from fact_deaths_monthly; --PRINT OUT FACT_DEATHS_MONTHLY TABLE
+select * from fact_cases_monthly;--PRINT OUT FACT_CASES_MONTHLY TABLE
+--------------------------------------------------------------------------------
+--REPORT #1
+--------------------------------------------------------------------------------
+select f.l_nbr,
+       f.dth_nbr,
+       dd.death_id,
+       d.month_long,
+       d.dim_year
+from fact_deaths_monthly f,
+     DIM_DEATHS dd,
+     DIM_DATES d
+where f.date_nbr = d.date_id
+    and f.dth_nbr = dd.death_id;
+--------------------------------------------------------------------------------
+--REPORT #2
+--------------------------------------------------------------------------------  
+select f.l_nbr,
+       f.case_nbr,
+       c.case_id,
+       d.month_long,
+       d.dim_year
+from fact_cases_monthly f,
+     DIM_CASES C,
+     DIM_DATES d
+where f.date_nbr = d.date_id
+  and f.case_nbr = c.case_id;      
